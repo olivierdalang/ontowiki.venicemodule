@@ -1,0 +1,26 @@
+<?php
+/**
+ * This file is part of the {@link http://ontowiki.net OntoWiki} project.
+ *
+ * @copyright Copyright (c) 2012, {@link http://aksw.org AKSW}
+ * @license http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ */
+
+/**
+ * OntoWiki venicemodule template
+ */
+
+#var_dump($this->data);
+?>
+<form method="post">
+    <button name="venicemodule_update"
+            id="venicemodule_update"
+            title="This will update every single geo feature from the PostGIS database">
+        Update geometries from PostGIS database
+    </button>
+    <button name="venicemodule_create3D"
+            id="venicemodule_create3D"
+            title="This will create 3D models using footprint_defined_by and a height_defined_by properties">
+        Create models from footprints + heights
+    </button>
+</form>

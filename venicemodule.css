@@ -1,0 +1,68 @@
+/*
+ * @copyright Copyright (c) 2014, {@link http://aksw.org AKSW}
+ * @license   http://opensource.org/licenses/gpl-license.php GNU General Public License (GPL)
+ */
+.content h2.navRoot
+{
+    font-size:1em;
+    font-weight:bold;
+}
+
+#venicemodule .icon { width:0.7em; }
+
+#venicemodule .icon.icon-arrow-next
+{
+    display:block;
+    font-size:1.5em !important;
+    width:1em; height:1em;
+    position:absolute;
+    right:0;
+    top:50%; margin-top:-0.5em;
+    /*top:0; height:100%;*/
+    background-color:#999;
+    background-image:url(icon-next.png);
+    -moz-border-radius:0.5em; border-radius:0.5em;
+}
+
+#venicemodule .icon.icon-arrow-previous { background-image:url(icon-previous.png); width:12px; }
+
+#venicemodule .icon.icon-arrow-first { background-image:url(icon-first.png); width:8px; }
+
+#venicemodule .navRoot.fancybuttons .icon.icon-arrow-previous
+{
+    background-color:#999;
+    width:1.2em;
+    height:1.2em;
+    -moz-border-radius:0.6em;
+    border-radius:0.6em;
+    position:relative;
+    left:-0.25em;
+}
+
+#venicemodule .navRoot.fancybuttons .icon.icon-arrow-first
+{
+    background-color:#bbb;
+    width:0.9em;
+    height:0.9em;
+    -moz-border-radius:0.45em;
+    border-radius:0.45em;
+}
+
+/* set contextmenu more left */
+#venicemodule .has-contextmenus-block li a:hover span.button
+{
+    right:1.75em;
+}
+
+
+#venicemodule a .icon, #venicemodule a.icon { opacity:0.4; }
+#venicemodule a:hover .icon, #venicemodule a.icon:hover { opacity:0.6; text-decoration:none !important;}
+#venicemodule a:hover .icon:hover { opacity:1; }
+
+#venicemodule a span.navDeeperIcon { opacity:0.5; }
+#venicemodule a span.navDeeperIcon:hover { opacity:1; }
+
+#venicemodule .has-contextmenus-block li a
+{
+    padding-right:1.75em;
+}
