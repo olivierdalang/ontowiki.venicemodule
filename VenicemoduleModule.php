@@ -15,16 +15,26 @@
  * @package  Extensions_Venicemodule
  * @author   {@link http://sebastian.tramp.name Sebastian Tramp}
  */
+
+
+// get the VTM config to connect to PostGIS
+require('../../../includes/config.php');
+
 class VenicemoduleModule extends OntoWiki_Module
 {
     protected $_session = null;
+    private $vtm;
 
     public function init()
     {
         $this->_session = $this->_owApp->session;
+        $this->vtm = new VTM();
 
         if( isset($_POST) ){
 
+            if( isset($_POST['venicemodule_import']) ){
+                $this->importFromPostGis();
+            }
             if( isset($_POST['venicemodule_export']) ){
                 $this->exportToPostGis();
             }
@@ -58,12 +68,84 @@ class VenicemoduleModule extends OntoWiki_Module
         return true;
     }
 
+    
+
+    private function importFromPostGis(){
+        echo 'Initial import from postgis<br/>';
+
+        //////////////////////////////
+        // REMOVING ALL THE TRIPLES //
+        //////////////////////////////
+
+        echo "Removing all the triples...<br/>";
+
+        $this->vtm->sparql('
+            WITH <http://dhlab.epfl.ch/vtm/>
+            DELETE {
+               ?a  ?b  ?c
+            }
+            WHERE{
+               ?a  ?b  ?c
+            }
+        ');
+
+
+
+        //////////////////////////
+        // IMPORTING EVERYTHING //
+        //////////////////////////
+
+
+        $tstart = microtime(true);
+        $tlast = $tstart;
+
+        /*******  IMPORTING THE ONTOLOGY  *******/
+
+        $this->vtm->sparql( file_get_contents('../../../sparql/import-ontology.sparql') );
+        echo "Created the Ontology in ".round(microtime(true)-$tlast,5)." seconds<br/>";
+        $tlast = microtime(true);
+
+        /*******  IMPORTING THE SOURCES  *******/
+
+        $this->vtm->sparql( file_get_contents('../../../sparql/import-sources.sparql') );
+        echo "Created the Sources in ".round(microtime(true)-$tlast,5)." seconds<br/>";
+        $tlast = microtime(true);
+
+
+        /*******  IMPORTING FROM POSTGIS  *******/
+
+        include("utils/importing-from_postgis.php");
+        echo "Importing from postGIS in ".round(microtime(true)-$tlast,5)." seconds<br/>";
+        $tlast = microtime(true);
+
+
+        /*******  IMPORTING THE MODELS  *******/
+
+        include("utils/importing-models.php");
+        echo "Importing models in ".round(microtime(true)-$tlast,5)." seconds<br/>";
+        $tlast = microtime(true);
+
+
+        /*******  ADDING MANUAL CHANGES  *******/
+
+        include("utils/importing-manual_changes.php");
+        echo "Importing manual changes in ".round(microtime(true)-$tlast,5)." seconds<br/>";
+        $tlast = microtime(true);
+
+        echo "Finished importation in ".round(microtime(true)-$tstart,5)." seconds<br/>";
+
+
+
+
+        $this->vtm->postgis->exec( 'VACUUM;' );
+        
+
+
+    }
+
 
     private function exportToPostGis(){
         echo 'exporting to postgis';
-
-        // get the VTM config to connect to PostGIS
-        require('../../../includes/config.php');
 
         $store      = $this->_owApp->erfurt->getStore();
         $graph      = (string)$this->_owApp->selectedModel;
@@ -76,7 +158,7 @@ class VenicemoduleModule extends OntoWiki_Module
 
         // create the table structure
         $query_1 = file_get_contents('extensions/venicemodule/sql/schema_for_export.sql');
-        $db_postgis->exec( $query_1 );
+        $this->vtm->postgis->exec( $query_1 );
 
         //get all geoentities
         $sparqlQuery = new Erfurt_Sparql_SimpleQuery();
@@ -91,20 +173,17 @@ class VenicemoduleModule extends OntoWiki_Module
 
         $result = $store->sparqlQuery($sparqlQuery, array('result_format' => 'extended'));
         foreach ($result['results']['bindings'] as $stmt) {
-            $db_postgis->exec( 'INSERT INTO "semantic"."features"(resource, type, label, parent, geom)
+            $this->vtm->postgis->exec( 'INSERT INTO "semantic"."features"(resource, type, label, parent, geom)
                 VALUES(\''.$stmt['s']['value'].'\',\''.$stmt['type']['value'].'\',\''.$stmt['label']['value'].'\',\''.$stmt['parent']['value'].'\',ST_GeomFromText(\''.$stmt['geom']['value'].'\',4326))' );
         }
 
-        $db_postgis->exec( 'VACUUM;' );
+        $this->vtm->postgis->exec( 'VACUUM;' );
         
 
 
     }
     private function updateFromPostGis(){
         echo 'updating from postgis';
-
-        // get the VTM config to connect to PostGIS
-        require('../../../includes/config.php');
 
         $versioning = $this->_owApp->erfurt->getVersioning();
         $store      = $this->_owApp->erfurt->getStore();
@@ -125,7 +204,7 @@ class VenicemoduleModule extends OntoWiki_Module
             $geom = $stmt['geom']['value'];
 
             //TODO : escape this properly
-            $postgis_rows = $db_postgis->query( 'SELECT ST_AsText(geom) as wkt FROM "semantic"."features" WHERE resource = \''.$resource.'\'');
+            $postgis_rows = $this->vtm->postgis->query( 'SELECT ST_AsText(geom) as wkt FROM "semantic"."features" WHERE resource = \''.$resource.'\'');
             $postgis_geom = $postgis_rows->fetch()['wkt'];
 
             // if the geom is the same in the postgis db as in the triplestore, we don't need to do anything
