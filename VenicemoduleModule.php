@@ -62,6 +62,9 @@ class VenicemoduleModule extends OntoWiki_Module
     private function exportToPostGis(){
         echo 'exporting to postgis';
 
+        // get the VTM config to connect to PostGIS
+        require('../../../includes/config.php');
+
         $store      = $this->_owApp->erfurt->getStore();
         $graph      = (string)$this->_owApp->selectedModel;
 
@@ -70,8 +73,6 @@ class VenicemoduleModule extends OntoWiki_Module
         $sparqlQuery->addFrom($graph);
         $sparqlQuery->setWherePart('{ ?s <http://www.opengis.net/ont/geosparql#geometry> ?o . }');
 
-        // get the VTM config to connect to PostGIS
-        require('../../../includes/config.php');
 
         // create the table structure
         $query_1 = file_get_contents('extensions/venicemodule/sql/schema_for_export.sql');
@@ -102,6 +103,9 @@ class VenicemoduleModule extends OntoWiki_Module
     private function updateFromPostGis(){
         echo 'updating from postgis';
 
+        // get the VTM config to connect to PostGIS
+        require('../../../includes/config.php');
+
         $versioning = $this->_owApp->erfurt->getVersioning();
         $store      = $this->_owApp->erfurt->getStore();
         $graph      = (string)$this->_owApp->selectedModel;
@@ -122,7 +126,7 @@ class VenicemoduleModule extends OntoWiki_Module
 
             //TODO : escape this properly
             $postgis_rows = $db_postgis->query( 'SELECT ST_AsText(geom) as wkt FROM "semantic"."features" WHERE resource = \''.$resource.'\'');
-            $postgis_geom = $postgis_rows[0]['wkt'];
+            $postgis_geom = $postgis_rows->fetch()['wkt'];
 
             // if the geom is the same in the postgis db as in the triplestore, we don't need to do anything
             if($postgis_geom == $geom){
