@@ -246,17 +246,27 @@ class VenicemoduleModule extends OntoWiki_Module
 
             $versioning->startAction($actionSpec);
 
-        // do action
+            // do action
             $store->deleteMatchingStatements($graph, $resource, 'http://www.opengis.net/ont/geosparql#geometry', null);
             $store->addStatement($graph, $resource, 'http://www.opengis.net/ont/geosparql#geometry', ['value'=>$postgis_geom,'type'=>"<http://www.openlinksw.com/schemas/virtrdf#Geometry>"]);
 
             // stopping action
             $versioning->endAction();
 
+            // recreate the spatial index
+            $this->vtm->virtuoso_query("
+                INSERT INTO RDF_QUAD (g, s, p, o)
+                VALUES (
+                     iri_to_id('$graph'),
+                     iri_to_id('$resource'),
+                     iri_to_id ('http://www.opengis.net/ont/geosparql#geometry'),
+                     DB.DBA.rdf_geo_add (rdf_box (st_geomfromtext ('$postgis_geom'), 256, 257, 0, 1 ))
+                )");
+
         }
 
-        // recreate the spatial index
-        $this->vtm->virtuoso_query('DB.DBA.RDF_GEO_FILL()');
+
+
 
 
         /*
