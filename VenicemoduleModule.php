@@ -31,10 +31,6 @@ class VenicemoduleModule extends OntoWiki_Module
         $this->vtm = new VTM();
 
         if( isset($_POST) ){
-
-            if( isset($_POST['venicemodule_debug']) ){
-                $this->debug();
-            }
             if( isset($_POST['venicemodule_import']) ){
                 $this->importFromPostGis();
             }
@@ -69,30 +65,6 @@ class VenicemoduleModule extends OntoWiki_Module
     public function shouldShow()
     {
         return true;
-    }
-
-    private function debug(){
-        echo 'Debug function<br/>';
-        
-        $this->vtm->sparql('
-            WITH <http://dhlab.epfl.ch/vtm/>
-            DELETE {
-               ?a  ?b  ?c
-            }
-            WHERE{
-               ?a  ?b  ?c .
-               <http://dhlab.epfl.ch/vtm/#austrian_lot_source_81> <http://www.opengis.net/ont/geosparql#geometry> ?c .
-            }
-        ');
-        
-        $this->vtm->sparql('
-            INSERT IN GRAPH <http://dhlab.epfl.ch/vtm/>{
-                <http://dhlab.epfl.ch/vtm/#austrian_lot_source_81> <http://www.opengis.net/ont/geosparql#geometry> "MULTIPOLYGON(((12.335586 45.438382,12.335794 45.448662,12.335886 45.438621,12.335928 45.438476,12.335948 45.438467,12.335821 45.438301,12.335728 45.438341,12.335689 45.438359,12.335586 45.438382)))"^^virtrdf:Geometry .
-            }
-        ');
-        
-
-
     }
 
     private function importFromPostGis(){
