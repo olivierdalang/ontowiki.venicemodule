@@ -86,6 +86,12 @@ class VenicemoduleModule extends OntoWiki_Module
             }
         ');
 
+        // We delete the whole history for this model
+        $versioning = $this->_owApp->erfurt->getVersioning()->deleteHistoryForModel( (string)$this->_owApp->selectedModel );
+
+        
+
+
 
 
         //////////////////////////
