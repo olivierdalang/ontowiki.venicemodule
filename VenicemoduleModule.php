@@ -111,21 +111,21 @@ class VenicemoduleModule extends OntoWiki_Module
 
         /*******  IMPORTING FROM POSTGIS  *******/
 
-        include("utils/importing-from_postgis.php");
+        include("../../../sparql/import-from_postgis.sparql.php");
         echo "Importing from postGIS in ".round(microtime(true)-$tlast,5)." seconds<br/>";
         $tlast = microtime(true);
 
 
         /*******  IMPORTING THE MODELS  *******/
 
-        include("utils/importing-models.php");
-        echo "Importing models in ".round(microtime(true)-$tlast,5)." seconds<br/>";
+        $this->vtm->sparql( file_get_contents('../../../sparql/import-models.sparql') );
+        echo "Created the models in ".round(microtime(true)-$tlast,5)." seconds<br/>";
         $tlast = microtime(true);
 
 
         /*******  ADDING MANUAL CHANGES  *******/
 
-        include("utils/importing-manual_changes.php");
+        $this->vtm->sparql( file_get_contents('../../../sparql/import-manual_changes.sparql') );
         echo "Importing manual changes in ".round(microtime(true)-$tlast,5)." seconds<br/>";
         $tlast = microtime(true);
 
