@@ -244,27 +244,6 @@ class VenicemoduleModule extends OntoWiki_Module
         }
 
 
-
-
-
-        /*
-        //$resource   = $this->_owApp->selectedResource;
-
-
-        // action spec for versioning
-        $actionSpec                = array();
-        $actionSpec['type']        = 20;
-        $actionSpec['modeluri']    = (string)$graph;
-        $actionSpec['resourceuri'] = $resource;
-
-        // starting action
-        $versioning->startAction($actionSpec);
-
-        
-        // stopping action
-        $versioning->endAction();
-        */
-
     }
 
     
