@@ -78,7 +78,7 @@ class VenicemoduleModule extends OntoWiki_Module
         //////////////////////////////
 
 
-        $this->vtm->sparql( file_get_contents('../../../sparql/delete-everything.sparql') );
+        $this->vtm->sparqlUpdate( file_get_contents('../../../sparql/delete-everything.sparql') );
 
         // We delete the whole history for this model
         $versioning = $this->_owApp->erfurt->getVersioning()->deleteHistoryForModel( (string)$this->_owApp->selectedModel );
@@ -97,13 +97,13 @@ class VenicemoduleModule extends OntoWiki_Module
 
         /*******  IMPORTING THE ONTOLOGY  *******/
 
-        $this->vtm->sparql( file_get_contents('../../../sparql/import-ontology.sparql') );
+        $this->vtm->sparqlUpdate( file_get_contents('../../../sparql/import-ontology.sparql') );
         echo "Created the Ontology in ".round(microtime(true)-$tlast,5)." seconds<br/>";
         $tlast = microtime(true);
 
         /*******  IMPORTING THE SOURCES  *******/
 
-        $this->vtm->sparql( file_get_contents('../../../sparql/import-sources.sparql') );
+        $this->vtm->sparqlUpdate( file_get_contents('../../../sparql/import-sources.sparql') );
         echo "Created the Sources in ".round(microtime(true)-$tlast,5)." seconds<br/>";
         $tlast = microtime(true);
 
@@ -117,14 +117,14 @@ class VenicemoduleModule extends OntoWiki_Module
 
         /*******  IMPORTING THE MODELS  *******/
 
-        $this->vtm->sparql( file_get_contents('../../../sparql/import-models.sparql') );
+        $this->vtm->sparqlUpdate( file_get_contents('../../../sparql/import-models.sparql') );
         echo "Created the models in ".round(microtime(true)-$tlast,5)." seconds<br/>";
         $tlast = microtime(true);
 
 
         /*******  ADDING MANUAL CHANGES  *******/
 
-        $this->vtm->sparql( file_get_contents('../../../sparql/import-manual_changes.sparql') );
+        $this->vtm->sparqlUpdate( file_get_contents('../../../sparql/import-manual_changes.sparql') );
         echo "Importing manual changes in ".round(microtime(true)-$tlast,5)." seconds<br/>";
         $tlast = microtime(true);
 
