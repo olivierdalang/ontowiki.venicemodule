@@ -70,26 +70,21 @@ class VenicemoduleModule extends OntoWiki_Module
     private function importFromPostGis(){
         echo 'Initial import from postgis<br/>';
 
+        $tstart = microtime(true);
+        $tlast = $tstart;
+
         //////////////////////////////
         // REMOVING ALL THE TRIPLES //
         //////////////////////////////
 
-        echo "Removing all the triples...<br/>";
 
-        $this->vtm->sparql('
-            WITH <http://dhlab.epfl.ch/vtm/>
-            DELETE {
-               ?a  ?b  ?c
-            }
-            WHERE{
-               ?a  ?b  ?c
-            }
-        ');
+        $this->vtm->sparql( file_get_contents('../../../sparql/delete-everything.sparql') );
 
         // We delete the whole history for this model
         $versioning = $this->_owApp->erfurt->getVersioning()->deleteHistoryForModel( (string)$this->_owApp->selectedModel );
 
-        
+        echo "Deleted everything in ".round(microtime(true)-$tlast,5)." seconds<br/>";
+        $tlast = microtime(true);        
 
 
 
@@ -99,8 +94,6 @@ class VenicemoduleModule extends OntoWiki_Module
         //////////////////////////
 
 
-        $tstart = microtime(true);
-        $tlast = $tstart;
 
         /*******  IMPORTING THE ONTOLOGY  *******/
 
