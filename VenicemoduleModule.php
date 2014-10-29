@@ -28,7 +28,7 @@ class VenicemoduleModule extends OntoWiki_Module
     public function init()
     {
         $this->_session = $this->_owApp->session;
-        $this->vtm = new VTM();
+        $this->vtm = VTM_Factory();
 
         if( isset($_POST) ){
             if( isset($_POST['venicemodule_import']) ){
